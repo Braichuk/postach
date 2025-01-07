@@ -55,7 +55,7 @@ def main():
     application.add_handler(CommandHandler("check_status", check_status))
 
     # Встановлюємо webhook для Telegram
-    application.bot.set_webhook(url='https://<your-app-name>.onrender.com/webhook')
+    application.bot.set_webhook(url='https://api.render.com/deploy/srv-ctug22bqf0us73f3qjs0?key=JnaPjvDIAkw')
 
     # Запуск Flask сервера
     app.run(port=int(os.environ.get('PORT', 5000)))
