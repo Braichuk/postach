@@ -3,6 +3,8 @@ from telegram.ext import Application, CommandHandler, ContextTypes
 from flask import Flask, request
 import os
 
+TOKEN = os.environ.get("7885890312:AAGwArM_oD2HjGYzGv326WnrnkyAP8NXUb4")
+
 # Ініціалізація Flask
 app = Flask(__name__)
 
