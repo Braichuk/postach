@@ -37,9 +37,9 @@ def main():
     dispatcher = updater.dispatcher
     
 # Додати обробники команд
-telegram_app.add_handler(CommandHandler("start", start))
-telegram_app.add_handler(CommandHandler("new_request", new_request))
-telegram_app.add_handler(CommandHandler("check_status", check_status))
+application.add_handler(CommandHandler("start", start))
+application.add_handler(CommandHandler("new_request", new_request))
+application.add_handler(CommandHandler("check_status", check_status))
 
 # Вебхук для обробки запитів
 @app.route('/webhook', methods=['POST'])
