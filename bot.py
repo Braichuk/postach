@@ -51,5 +51,14 @@ def main():
     application.run_polling()
 
 if __name__ == '__main__':
-    main()
-      app.run(port=int(os.environ.get('PORT', 5000)))
+    dispatcher = Dispatcher(bot, None)
+
+    # Додаємо обробник для /start
+    start_handler = CommandHandler('start', start)
+    dispatcher.add_handler(start_handler)
+
+    # Встановлюємо webhook
+    bot.set_webhook(url='https://<your-app-name>.onrender.com/webhook')
+
+    # Запуск Flask сервера
+    app.run(port=int(os.environ.get('PORT', 5000)))
