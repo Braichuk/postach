@@ -47,7 +47,7 @@ def webhook():
 
 if __name__ == '__main__':
     # Встановлюємо webhook
-    webhook_url = f'https://<your-app-name>.onrender.com/webhook'
+    webhook_url = f'https://api.render.com/deploy/srv-ctug22bqf0us73f3qjs0?key=JnaPjvDIAkw'
     telegram_app.bot.set_webhook(url=webhook_url)
 
     # Запуск Flask сервера
