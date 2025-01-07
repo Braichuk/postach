@@ -1,28 +1,12 @@
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
-
-# Ініціалізація Flask для webhook
 from flask import Flask, request
 import os
 
+# Ініціалізація Flask
 app = Flask(__name__)
 
-# Встановлення webhook
-@app.route('/webhook', methods=['POST'])
-def webhook():
-    json_str = request.get_data().decode("UTF-8")
-    update = Update.de_json(json_str, telegram_app.bot)
-    telegram_app.update_queue.put_nowait(update)
-    return 'OK'
-
-if __name__ == '__main__':
-    # Встановлюємо webhook для Telegram
-    telegram_app.bot.set_webhook(url='https://<your-app-name>.onrender.com/webhook')
-
-    # Запуск Flask сервера
-    app.run(port=int(os.environ.get('PORT', 5000)))
 # Словник для заявок
-
 applications = {}
 
 # Функція для команди /start
@@ -35,17 +19,6 @@ async def new_request(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     applications[chat_id] = {"status": "На розгляді"}
     await update.message.reply_text("Заявка створена! Введіть назву матеріалу.")
 
-# Оновлення статусу заявки
-async def update_status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    query = update.callback_query
-    await query.answer()
-    chat_id = query.message.chat_id
-    if chat_id in applications:
-        applications[chat_id]["status"] = "Виконано"
-        await query.edit_message_text(text="Статус заявки оновлено: Виконано")
-    else:
-        await query.edit_message_text(text="Заявка не знайдена.")
-
 # Перегляд статусу заявки
 async def check_status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     chat_id = update.message.chat_id
@@ -55,26 +28,27 @@ async def check_status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     else:
         await update.message.reply_text("Заявка не знайдена.")
 
-# Основна програма
-def main():
-    # Ваш токен від BotFather
-    TOKEN = '7885890312:AAEd1pmNImB2Ec0u4P8yZiyrN3Y4myop4t4'
+# Ініціалізація Telegram Application
+TOKEN = os.environ.get("7885890312:AAEd1pmNImB2Ec0u4P8yZiyrN3Y4myop4t4")  # Токен через змінну середовища
+telegram_app = Application.builder().token(TOKEN).build()
 
-    # Ініціалізація бота через Application
-    application = Application.builder().token(TOKEN).build()
+# Додати обробники команд
+telegram_app.add_handler(CommandHandler("start", start))
+telegram_app.add_handler(CommandHandler("new_request", new_request))
+telegram_app.add_handler(CommandHandler("check_status", check_status))
 
-    # Додати обробники команд
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("new_request", new_request))
-    application.add_handler(CommandHandler("check_status", check_status))
-
-    # Запуск бота
-    application.run_polling()
+# Вебхук для обробки запитів
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    json_str = request.get_data().decode("UTF-8")
+    update = Update.de_json(json_str, telegram_app.bot)
+    telegram_app.update_queue.put_nowait(update)
+    return 'OK'
 
 if __name__ == '__main__':
-    dispatcher = Dispatcher(bot, None)
+    # Встановлюємо webhook
+    webhook_url = f'https://<your-app-name>.onrender.com/webhook'
+    telegram_app.bot.set_webhook(url=webhook_url)
 
-    # Додаємо обробник для /start
-    start_handler = CommandHandler('start', start)
-    dispatcher.add_handler(start_handler)
-
+    # Запуск Flask сервера
+    app.run(port=int(os.environ.get('PORT', 5000)))
