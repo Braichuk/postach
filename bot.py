@@ -1,7 +1,28 @@
 from telegram import Update
-from telegram.ext import Application, CommandHandler, ContextTypes, CallbackQueryHandler
+from telegram.ext import Application, CommandHandler, ContextTypes
 
+# Ініціалізація Flask для webhook
+from flask import Flask, request
+import os
+
+app = Flask(__name__)
+
+# Встановлення webhook
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    json_str = request.get_data().decode("UTF-8")
+    update = Update.de_json(json_str, telegram_app.bot)
+    telegram_app.update_queue.put_nowait(update)
+    return 'OK'
+
+if __name__ == '__main__':
+    # Встановлюємо webhook для Telegram
+    telegram_app.bot.set_webhook(url='https://<your-app-name>.onrender.com/webhook')
+
+    # Запуск Flask сервера
+    app.run(port=int(os.environ.get('PORT', 5000)))
 # Словник для заявок
+
 applications = {}
 
 # Функція для команди /start
@@ -57,8 +78,3 @@ if __name__ == '__main__':
     start_handler = CommandHandler('start', start)
     dispatcher.add_handler(start_handler)
 
-    # Встановлюємо webhook
-    bot.set_webhook(url='https://<your-app-name>.onrender.com/webhook')
-
-    # Запуск Flask сервера
-    app.run(port=int(os.environ.get('PORT', 5000)))
