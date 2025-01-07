@@ -2,6 +2,7 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 from flask import Flask, request
 import os
+TOKEN = os.environ.get("7885890312:AAGwArM_oD2HjGYzGv326WnrnkyAP8NXUb4")
 
 # Ініціалізація Flask для webhook
 app = Flask(__name__)
