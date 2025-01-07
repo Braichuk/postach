@@ -29,7 +29,13 @@ async def check_status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         await update.message.reply_text(f"Статус вашої заявки: {status}")
     else:
         await update.message.reply_text("Заявка не знайдена.")
-
+        
+# Основна функція
+def main():
+    TOKEN = '7885890312:AAGwArM_oD2HjGYzGv326WnrnkyAP8NXUb4'
+    updater = Updater(TOKEN)
+    dispatcher = updater.dispatcher
+    
 # Додати обробники команд
 telegram_app.add_handler(CommandHandler("start", start))
 telegram_app.add_handler(CommandHandler("new_request", new_request))
