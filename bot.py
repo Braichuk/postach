@@ -3,9 +3,7 @@ from telegram.ext import Application, CommandHandler, ContextTypes
 from flask import Flask, request
 import os
 
-TOKEN = os.environ.get("7885890312:AAGwArM_oD2HjGYzGv326WnrnkyAP8NXUb4")
-
-# Ініціалізація Flask
+# Ініціалізація Flask для webhook
 app = Flask(__name__)
 
 # Словник для заявок
@@ -13,7 +11,9 @@ applications = {}
 
 # Функція для команди /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text("Привіт! Я ваш бот для заявок. Використовуйте команду /new_request для створення заявки.")
+    await update.message.reply_text(
+        "Привіт! Я ваш бот для заявок. Використовуйте команду /new_request для створення заявки."
+    )
 
 # Функція для створення нової заявки
 async def new_request(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -29,30 +29,36 @@ async def check_status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         await update.message.reply_text(f"Статус вашої заявки: {status}")
     else:
         await update.message.reply_text("Заявка не знайдена.")
-        
-# Основна функція
-def main():
-    TOKEN = '7885890312:AAGwArM_oD2HjGYzGv326WnrnkyAP8NXUb4'
-    updater = Updater(TOKEN)
-    dispatcher = updater.dispatcher
-    
-# Додати обробники команд
-application.add_handler(CommandHandler("start", start))
-application.add_handler(CommandHandler("new_request", new_request))
-application.add_handler(CommandHandler("check_status", check_status))
 
-# Вебхук для обробки запитів
+# Встановлення webhook
 @app.route('/webhook', methods=['POST'])
 def webhook():
     json_str = request.get_data().decode("UTF-8")
-    update = Update.de_json(json_str, telegram_app.bot)
-    telegram_app.update_queue.put_nowait(update)
+    update = Update.de_json(json_str, application.bot)
+    application.update_queue.put_nowait(update)
     return 'OK'
 
-if __name__ == '__main__':
-    # Встановлюємо webhook
-    webhook_url = f'https://api.render.com/deploy/srv-ctug22bqf0us73f3qjs0?key=JnaPjvDIAkw'
-    telegram_app.bot.set_webhook(url=webhook_url)
+# Основна програма
+def main():
+    # Отримання токена з середовища
+    TOKEN = os.environ.get("7885890312:AAGwArM_oD2HjGYzGv326WnrnkyAP8NXUb4")
+    if not TOKEN:
+        raise ValueError("Токен Telegram не знайдено!")
+
+    # Ініціалізація бота через Application
+    global application
+    application = Application.builder().token(TOKEN).build()
+
+    # Додати обробники команд
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("new_request", new_request))
+    application.add_handler(CommandHandler("check_status", check_status))
+
+    # Встановлюємо webhook для Telegram
+    application.bot.set_webhook(url='https://<your-app-name>.onrender.com/webhook')
 
     # Запуск Flask сервера
     app.run(port=int(os.environ.get('PORT', 5000)))
+
+if __name__ == "__main__":
+    main()
