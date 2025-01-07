@@ -30,10 +30,6 @@ async def check_status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     else:
         await update.message.reply_text("Заявка не знайдена.")
 
-# Ініціалізація Telegram Application
-TOKEN = os.environ.get("7885890312:AAGwArM_oD2HjGYzGv326WnrnkyAP8NXUb4")  # Токен через змінну середовища
-telegram_app = Application.builder().token(TOKEN).build()
-
 # Додати обробники команд
 telegram_app.add_handler(CommandHandler("start", start))
 telegram_app.add_handler(CommandHandler("new_request", new_request))
