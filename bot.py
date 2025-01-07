@@ -52,3 +52,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+      app.run(port=int(os.environ.get('PORT', 5000)))
